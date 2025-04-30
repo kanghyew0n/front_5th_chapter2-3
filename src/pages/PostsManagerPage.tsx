@@ -20,11 +20,10 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
-  TableHeader,
   TableRow,
   Textarea,
 } from "../shared/ui"
+import { PostTableHeader } from "@widgets/post"
 
 const PostsManager = () => {
   const navigate = useNavigate()
@@ -231,7 +230,7 @@ const PostsManager = () => {
     }
   }
 
-  // 댓글 업데이트
+  // MARK: 댓글 업데이트
   const updateComment = async () => {
     try {
       const response = await fetch(`/api/comments/${selectedComment.id}`, {
@@ -250,7 +249,7 @@ const PostsManager = () => {
     }
   }
 
-  // 댓글 삭제
+  // MARK: 댓글 삭제
   const deleteComment = async (id, postId) => {
     try {
       await fetch(`/api/comments/${id}`, {
@@ -265,7 +264,7 @@ const PostsManager = () => {
     }
   }
 
-  // 댓글 좋아요
+  // MARK: 댓글 좋아요
   const likeComment = async (id, postId) => {
     try {
       const response = await fetch(`/api/comments/${id}`, {
@@ -285,14 +284,14 @@ const PostsManager = () => {
     }
   }
 
-  // 게시물 상세 보기
+  // MARK: 게시물 상세 보기
   const openPostDetail = (post) => {
     setSelectedPost(post)
     fetchComments(post.id)
     setShowPostDetailDialog(true)
   }
 
-  // 사용자 모달 열기
+  // MARK: 사용자 모달 열기
   const openUserModal = async (user) => {
     try {
       const response = await fetch(`/api/users/${user.id}`)
@@ -327,7 +326,7 @@ const PostsManager = () => {
     setSelectedTag(params.get("tag") || "")
   }, [location.search])
 
-  // 하이라이트 함수 추가
+  // MARK: 하이라이트 함수 추가
   const highlightText = (text: string, highlight: string) => {
     if (!text) return null
     if (!highlight.trim()) {
@@ -342,18 +341,10 @@ const PostsManager = () => {
     )
   }
 
-  // 게시물 테이블 렌더링
+  // MARK: 게시물 테이블 렌더링
   const renderPostTable = () => (
     <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="w-[50px]">ID</TableHead>
-          <TableHead>제목</TableHead>
-          <TableHead className="w-[150px]">작성자</TableHead>
-          <TableHead className="w-[150px]">반응</TableHead>
-          <TableHead className="w-[150px]">작업</TableHead>
-        </TableRow>
-      </TableHeader>
+      <PostTableHeader />
       <TableBody>
         {posts.map((post) => (
           <TableRow key={post.id}>
@@ -422,7 +413,7 @@ const PostsManager = () => {
     </Table>
   )
 
-  // 댓글 렌더링
+  // MARK: 댓글 렌더링
   const renderComments = (postId) => (
     <div className="mt-2">
       <div className="flex items-center justify-between mb-2">

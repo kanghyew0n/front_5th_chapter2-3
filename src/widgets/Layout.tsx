@@ -1,5 +1,5 @@
-import Header from "@widgets/ui/Header.tsx"
-import Footer from "@widgets/ui/Footer.tsx"
+import Header from "./Header.tsx"
+import Footer from "./Footer.tsx"
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (

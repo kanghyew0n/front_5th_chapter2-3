@@ -1,5 +1,5 @@
 import PostManagerPage from "@pages/PostsManagerPage"
-import Layout from "@widgets/ui/Layout"
+import Layout from "@widgets/Layout"
 import { BrowserRouter as Router } from "react-router-dom"
 
 const App = () => {
