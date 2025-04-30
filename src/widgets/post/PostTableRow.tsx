@@ -2,15 +2,21 @@ import { Button, TableCell, TableRow } from "@shared/ui"
 import { Edit2, MessageSquare, ThumbsDown, ThumbsUp, Trash2 } from "lucide-react"
 
 export const PostTableRow = ({
+  posts,
   post,
+  comments,
   highlightText,
   searchQuery,
   selectedTag,
   setSelectedTag,
   updateURL,
-  deletePost,
   setSelectedPost,
   setPosts,
+  setComments,
+  setShowPostDetailDialog,
+  setSelectedUser,
+  setShowUserModal,
+  setShowEditDialog,
 }) => {
   // MARK: 게시물 상세 보기
   const openPostDetail = (post) => {
@@ -31,13 +37,36 @@ export const PostTableRow = ({
     }
   }
 
+  // 댓글 가져오기
+  const fetchComments = async (postId) => {
+    if (comments[postId]) return // 이미 불러온 댓글이 있으면 다시 불러오지 않음
+    try {
+      const response = await fetch(`/api/comments/post/${postId}`)
+      const data = await response.json()
+      setComments((prev) => ({ ...prev, [postId]: data.comments }))
+    } catch (error) {
+      console.error("댓글 가져오기 오류:", error)
+    }
+  }
+
+  // MARK: 사용자 모달 열기
+  const openUserModal = async (user) => {
+    try {
+      const response = await fetch(`/api/users/${user.id}`)
+      const userData = await response.json()
+      setSelectedUser(userData)
+      setShowUserModal(true)
+    } catch (error) {
+      console.error("사용자 정보 가져오기 오류:", error)
+    }
+  }
+
   return (
     <TableRow key={post.id}>
       <TableCell>{post.id}</TableCell>
       <TableCell>
         <div className="space-y-1">
           <div>{highlightText(post.title, searchQuery)}</div>
-
           <div className="flex flex-wrap gap-1">
             {post.tags?.map((tag) => (
               <span
