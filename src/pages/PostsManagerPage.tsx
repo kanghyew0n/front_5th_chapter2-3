@@ -17,12 +17,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Table,
-  TableBody,
   Textarea,
 } from "../shared/ui"
-import { PostTableHeader } from "@widgets/post"
-import { PostTableRow } from "@widgets/post/PostTableRow"
 import { PostTable } from "@widgets/post/PostTable"
 
 const PostsManager = () => {

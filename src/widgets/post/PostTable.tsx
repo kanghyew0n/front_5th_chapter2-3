@@ -1,6 +1,6 @@
 import { Table, TableBody } from "@shared/ui"
 import { PostTableHeader } from "./PostTableHeader"
-import { PostTableRow } from "./PostTableRow"
+import { PostTableRow } from "@entities/PostTableRow"
 
 export const PostTable = ({
   posts,
