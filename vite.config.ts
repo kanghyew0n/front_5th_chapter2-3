@@ -1,17 +1,38 @@
-import { defineConfig } from "vite"
+import { defineConfig, Plugin } from "vite"
 import react from "@vitejs/plugin-react"
+import tsconfigPaths from "vite-tsconfig-paths"
 import path from "path"
+
+function apiReplace(): Plugin {
+  return {
+    name: "api-replace",
+    apply: "build",
+    transform(code, id) {
+      if (!id.match(/\.(ts|js|tsx|jsx)$/)) return
+      return code.replace(
+        /(['"`])\/api([^"'`\\]*)\1/g,
+        (_, quote, apiPath) => `${quote}https://dummyjson.com${apiPath}${quote}`,
+      )
+    },
+  }
+}
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tsconfigPaths(), apiReplace()],
+  base: process.env.NODE_ENV === "production" ? "/front_5th_chapter2-3/" : "/",
+
+  build: {
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, "index.html"),
+      },
+    },
+    outDir: "dist",
+  },
   resolve: {
     alias: {
-      "@pages": path.resolve(__dirname, "src/pages"),
-      "@widgets": path.resolve(__dirname, "src/widgets"),
-      "@features": path.resolve(__dirname, "src/features"),
-      "@entities": path.resolve(__dirname, "src/entities"),
-      "@shared": path.resolve(__dirname, "src/shared"),
+      "@": path.resolve(__dirname, "src"),
     },
   },
   server: {
