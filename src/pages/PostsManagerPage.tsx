@@ -11,14 +11,18 @@ import { EditPostDialog } from "@widgets/dialogs/EditPostDialog"
 import { AddPostDialog } from "@widgets/dialogs/AddPostDialog"
 import { Pagination } from "@shared/ui/Pagination"
 import { PostFilters } from "@features/post/ui/PostFilters"
+import { usePostsStore } from "@features/post/model/usePostsStore"
+import { getPosts } from "@entities/api/post"
+import { useQuery } from "@tanstack/react-query"
 
 const PostsManager = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const queryParams = new URLSearchParams(location.search)
 
+  const { posts, setPosts } = usePostsStore()
+
   // 상태 관리
-  const [posts, setPosts] = useState([])
   const [total, setTotal] = useState(0)
   const [skip, setSkip] = useState(parseInt(queryParams.get("skip") || "0"))
   const [limit, setLimit] = useState(parseInt(queryParams.get("limit") || "10"))
@@ -29,7 +33,7 @@ const PostsManager = () => {
   const [showAddDialog, setShowAddDialog] = useState(false)
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [newPost, setNewPost] = useState({ title: "", body: "", userId: 1 })
-  const [loading, setLoading] = useState(false)
+  const [_, setLoading] = useState(false)
   const [tags, setTags] = useState([])
   const [selectedTag, setSelectedTag] = useState(queryParams.get("tag") || "")
   const [comments, setComments] = useState({})
@@ -40,6 +44,8 @@ const PostsManager = () => {
   const [showPostDetailDialog, setShowPostDetailDialog] = useState(false)
   const [showUserModal, setShowUserModal] = useState(false)
   const [selectedUser, setSelectedUser] = useState(null)
+
+  const { data, isLoading } = useQuery({ queryKey: ["posts"], queryFn: () => getPosts(limit, skip) })
 
   // URL 업데이트 함수
   const updateURL = () => {
@@ -55,33 +61,8 @@ const PostsManager = () => {
 
   // 게시물 가져오기
   const fetchPosts = () => {
-    setLoading(true)
-    let postsData
-    let usersData
-
-    fetch(`/api/posts?limit=${limit}&skip=${skip}`)
-      .then((response) => response.json())
-      .then((data) => {
-        postsData = data
-        return fetch("/api/users?limit=0&select=username,image")
-      })
-      .then((response) => response.json())
-      .then((users) => {
-        usersData = users.users
-        const postsWithUsers = postsData.posts.map((post) => ({
-          ...post,
-          author: usersData.find((user) => user.id === post.userId),
-        }))
-        setPosts(postsWithUsers)
-        console.log(" postsWithUsers) >> ", postsWithUsers)
-        setTotal(postsData.total)
-      })
-      .catch((error) => {
-        console.error("게시물 가져오기 오류:", error)
-      })
-      .finally(() => {
-        setLoading(false)
-      })
+    setPosts(data?.postsWithUsers)
+    setTotal(data?.total)
   }
 
   // 태그 가져오기
@@ -259,7 +240,7 @@ const PostsManager = () => {
       fetchPosts()
     }
     updateURL()
-  }, [skip, limit, sortBy, sortOrder, selectedTag])
+  }, [data, skip, limit, sortBy, sortOrder, selectedTag])
 
   useEffect(() => {
     const params = new URLSearchParams(location.search)
@@ -316,11 +297,10 @@ const PostsManager = () => {
           />
 
           {/* 게시물 테이블 */}
-          {loading ? (
+          {isLoading ? (
             <div className="flex justify-center p-4">로딩 중...</div>
           ) : (
             <PostTable
-              posts={posts}
               comments={comments}
               highlightText={highlightText}
               searchQuery={searchQuery}
@@ -328,7 +308,6 @@ const PostsManager = () => {
               setSelectedTag={setSelectedTag}
               updateURL={updateURL}
               setSelectedPost={setSelectedPost}
-              setPosts={setPosts}
               setComments={setComments}
               setShowPostDetailDialog={setShowPostDetailDialog}
               setSelectedUser={setSelectedUser}
