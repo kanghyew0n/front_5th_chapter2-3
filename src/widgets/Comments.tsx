@@ -1,4 +1,4 @@
-import { Comment } from "@entities/Comment"
+import { Comment } from "@entities/ui/Comment"
 import { Button } from "@shared/ui"
 import { Plus } from "lucide-react"
 
