@@ -1,9 +1,9 @@
 import { Table, TableBody } from "@shared/ui"
 import { PostTableHeader } from "./PostTableHeader"
-import { PostTableRow } from "@entities/PostTableRow"
+import { PostTableRow } from "@entities/ui/PostTableRow"
+import { usePostsStore } from "@features/post/model/usePostsStore"
 
 export const PostTable = ({
-  posts,
   comments,
   highlightText,
   searchQuery,
@@ -11,13 +11,14 @@ export const PostTable = ({
   setSelectedTag,
   updateURL,
   setSelectedPost,
-  setPosts,
   setComments,
   setShowPostDetailDialog,
   setSelectedUser,
   setShowUserModal,
   setShowEditDialog,
 }) => {
+  const { posts, setPosts } = usePostsStore()
+
   return (
     <Table>
       <PostTableHeader />
